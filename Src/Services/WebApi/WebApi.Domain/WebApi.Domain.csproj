@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Utilities\Searchable\Searchable.Domain\Searchable.Domain.csproj" />
+    <ProjectReference Include="..\..\Core\Domain.Core\Domain.Core.csproj" />
+  </ItemGroup>
+
+</Project>

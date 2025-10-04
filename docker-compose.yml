@@ -1,0 +1,16 @@
+services:
+    database:
+        image: postgres:latest
+
+    azurite:
+        image: mcr.microsoft.com/azure-storage/azurite:latest
+
+    webapi.presentation:
+        image: ${DOCKER_REGISTRY-}webapipresentation
+        build:
+            context: .
+            dockerfile: Src/Services/WebApi/WebApi.Presentation/Dockerfile
+
+volumes:
+    database_data:
+    azurite_data:

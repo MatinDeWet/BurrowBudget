@@ -1,0 +1,29 @@
+services:
+    database:
+        container_name: database
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        restart: unless-stopped
+        ports:
+            - "5432:5432"
+        volumes:
+            - database_data:/var/lib/postgresql/data/ 
+
+    azurite:
+        container_name: azurite
+        restart: unless-stopped
+        ports:
+            - 10000:10000
+            - 10001:10001
+            - 10002:10002
+        volumes:
+            - azurite_data:/data mcr.microsoft.com/azure-storage/azurite
+
+    webapi.presentation:
+        container_name: webapi-presentation
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_HTTP_PORTS=8080
+        ports:
+            - "8080"

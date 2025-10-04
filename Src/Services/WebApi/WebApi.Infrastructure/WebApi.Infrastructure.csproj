@@ -3,4 +3,7 @@
     <ProjectReference Include="..\..\Core\Infrastructure.Core\Infrastructure.Core.csproj" />
     <ProjectReference Include="..\WebApi.Application\WebApi.Application.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
+  </ItemGroup>
 </Project>

@@ -16,7 +16,7 @@ public class CategoryGroup : Entity<Guid>, ISearchableEntity
 
     public bool IsActive { get; private set; } = true;
 
-    public virtual ICollection<Category> Categories { get; private set; } = new List<Category>();
+    public virtual ICollection<Category> Categories { get; private set; } = [];
 
     public NpgsqlTsVector SearchVector { get; }
 

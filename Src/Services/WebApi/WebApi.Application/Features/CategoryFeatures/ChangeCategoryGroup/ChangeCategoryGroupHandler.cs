@@ -17,11 +17,11 @@ internal sealed class ChangeCategoryGroupHandler(ICategoryQueryRepo queryRepo, I
             return Result.NotFound($"Category Group with Id {command.CategoryGroupId} was not found.");
         }
 
-        Category? category = await queryRepo.Categories.FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
+        Category? category = await queryRepo.Categories.FirstOrDefaultAsync(x => x.Id == command.CategoryId, cancellationToken);
 
         if (category is null)
         {
-            return Result.NotFound($"Category with Id {command.Id} was not found.");
+            return Result.NotFound($"Category with Id {command.CategoryId} was not found.");
         }
 
         category.ChangeCategoryGroup(command.CategoryGroupId);

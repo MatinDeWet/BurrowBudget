@@ -3,5 +3,5 @@ public sealed record ToggleCategoryActiveRequest : ICommand
 {
     public Guid Id { get; init; }
 
-    public bool? IsActive { get; init; }
+    public bool? State { get; init; }
 }

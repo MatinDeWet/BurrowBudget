@@ -17,7 +17,7 @@ internal sealed class ToggleCategoryActiveHandler(ICategoryQueryRepo queryRepo, 
             return Result.NotFound($"Category with Id {command.Id} was not found.");
         }
 
-        category.ToggleActive(command.IsActive);
+        category.ToggleActive(command.State);
 
         await commandRepo.UpdateAsync(category, true, cancellationToken);
 

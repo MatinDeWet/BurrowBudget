@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using WebApi.Application.Repositories.Command;
 using WebApi.Application.Repositories.Query;
 
-namespace WebApi.Application.Features.CategoryFeatures.CreateCategoryHandler;
+namespace WebApi.Application.Features.CategoryFeatures.CreateCategory;
 internal sealed class CreateCategoryHandler(ICategoryGroupQueryRepo queryRepo, ICategoryCommandRepo commandRepo, IIdentityInfo identityInfo)
     : ICommandManager<CreateCategoryRequest, Guid>
 {

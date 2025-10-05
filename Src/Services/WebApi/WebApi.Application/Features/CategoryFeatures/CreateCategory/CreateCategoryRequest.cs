@@ -1,4 +1,4 @@
-﻿namespace WebApi.Application.Features.CategoryFeatures.CreateCategoryHandler;
+﻿namespace WebApi.Application.Features.CategoryFeatures.CreateCategory;
 public sealed record CreateCategoryRequest : ICommand<Guid>
 {
     public Guid CategoryGroupId { get; init; }

@@ -5,9 +5,9 @@ using WebApi.Domain.Entities;
 using WebApi.Infrastructure.Data.Contexts;
 
 namespace WebApi.Infrastructure.Repositories.Command;
-internal sealed class UserRefreshTokenCommandRepository : CommandRepo<BudgetContext>, IUserRefreshTokenCommandRepository
+internal sealed class UserRefreshTokenCommandRepo : CommandRepo<BudgetContext>, IUserRefreshTokenCommandRepo
 {
-    public UserRefreshTokenCommandRepository(BudgetContext context) : base(context)
+    public UserRefreshTokenCommandRepo(BudgetContext context) : base(context)
     {
     }
 

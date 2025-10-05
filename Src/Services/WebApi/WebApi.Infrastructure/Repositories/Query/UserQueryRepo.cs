@@ -6,9 +6,9 @@ using WebApi.Application.Repositories.Query;
 using WebApi.Infrastructure.Data.Contexts;
 
 namespace WebApi.Infrastructure.Repositories.Query;
-internal sealed class UserQueryRepository : SecureQueryRepo<BudgetContext>, IUserQueryRepository
+internal sealed class UserQueryRepo : SecureQueryRepo<BudgetContext>, IUserQueryRepo
 {
-    public UserQueryRepository(BudgetContext context, IIdentityInfo info, IEnumerable<IProtected> protection)
+    public UserQueryRepo(BudgetContext context, IIdentityInfo info, IEnumerable<IProtected> protection)
         : base(context, info, protection)
     {
     }

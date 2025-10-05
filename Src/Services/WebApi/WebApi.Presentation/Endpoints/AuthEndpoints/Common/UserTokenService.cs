@@ -10,11 +10,11 @@ namespace WebApi.Presentation.Endpoints.AuthEndpoints.Common;
 
 public class UserTokenService : RefreshTokenService<TokenRequest, ApplicationTokenResponse>
 {
-    private readonly IUserRefreshTokenCommandRepository _commandRepo;
-    private readonly IUserRefreshTokenQueryRepository _queryRepo;
+    private readonly IUserRefreshTokenCommandRepo _commandRepo;
+    private readonly IUserRefreshTokenQueryRepo _queryRepo;
     private readonly IQueryManager<GetUserClaimsRequest, List<Claim>> _userClaimHandler;
 
-    public UserTokenService(IConfiguration config, IUserRefreshTokenCommandRepository commandRepo, IUserRefreshTokenQueryRepository queryRepo, IQueryManager<GetUserClaimsRequest, List<Claim>> userClaimHandler)
+    public UserTokenService(IConfiguration config, IUserRefreshTokenCommandRepo commandRepo, IUserRefreshTokenQueryRepo queryRepo, IQueryManager<GetUserClaimsRequest, List<Claim>> userClaimHandler)
     {
         _commandRepo = commandRepo;
         _queryRepo = queryRepo;

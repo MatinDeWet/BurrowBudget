@@ -5,9 +5,9 @@ using WebApi.Application.Repositories.Command;
 using WebApi.Infrastructure.Data.Contexts;
 
 namespace WebApi.Infrastructure.Repositories.Command;
-internal sealed class UserCommandRepository : SecureCommandRepo<BudgetContext>, IUserCommandRepository
+internal sealed class UserCommandRepo : SecureCommandRepo<BudgetContext>, IUserCommandRepo
 {
-    public UserCommandRepository(BudgetContext context, IIdentityInfo info, IEnumerable<IProtected> protection)
+    public UserCommandRepo(BudgetContext context, IIdentityInfo info, IEnumerable<IProtected> protection)
         : base(context, info, protection)
     {
     }

@@ -1,4 +1,4 @@
 ﻿using Repository.Base;
 
 namespace WebApi.Application.Repositories.Command;
-public interface IUserCommandRepository : ISecureCommandRepo;
+public interface IUserCommandRepo : ISecureCommandRepo;

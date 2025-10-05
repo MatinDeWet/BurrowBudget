@@ -2,7 +2,7 @@
 using WebApi.Domain.Entities;
 
 namespace WebApi.Application.Repositories.Query;
-public interface IUserRefreshTokenQueryRepository : IQueryRepo
+public interface IUserRefreshTokenQueryRepo : IQueryRepo
 {
     IQueryable<UserRefreshToken> UserRefreshTokens { get; }
 

@@ -5,9 +5,9 @@ using WebApi.Domain.Entities;
 using WebApi.Infrastructure.Data.Contexts;
 
 namespace WebApi.Infrastructure.Repositories.Query;
-internal sealed class UserRefreshTokenQueryRepository : QueryRepo<BudgetContext>, IUserRefreshTokenQueryRepository
+internal sealed class UserRefreshTokenQueryRepo : QueryRepo<BudgetContext>, IUserRefreshTokenQueryRepo
 {
-    public UserRefreshTokenQueryRepository(BudgetContext context) : base(context)
+    public UserRefreshTokenQueryRepo(BudgetContext context) : base(context)
     {
     }
 

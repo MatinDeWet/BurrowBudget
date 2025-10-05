@@ -5,7 +5,7 @@ using configuredUser = Domain.Core.Entities.User;
 
 namespace WebApi.Presentation.Endpoints.AuthEndpoints.AuthRegister;
 
-public class AuthRegisterEndpoint(UserManager<ApplicationUser> userManager, IUserCommandRepository repo) : Endpoint<AuthRegisterRequest>
+public class AuthRegisterEndpoint(UserManager<ApplicationUser> userManager, IUserCommandRepo repo) : Endpoint<AuthRegisterRequest>
 {
     public override void Configure()
     {

@@ -2,7 +2,7 @@
 using Repository.Base;
 
 namespace WebApi.Application.Repositories.Query;
-public interface IUserQueryRepository : ISecureQueryRepo
+public interface IUserQueryRepo : ISecureQueryRepo
 {
     IQueryable<User> Users { get; }
 }

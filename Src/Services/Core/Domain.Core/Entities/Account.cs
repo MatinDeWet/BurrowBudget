@@ -16,4 +16,30 @@ public class Account : Entity<Guid>, ISearchableEntity
     public AccountTypeEnum AccountType { get; private set; }
 
     public NpgsqlTsVector SearchVector { get; }
+
+    public static Account Create(
+        Guid userId,
+        string name,
+        AccountTypeEnum accountType,
+        string? description = null)
+    {
+        return new Account
+        {
+            Id = Guid.CreateVersion7(),
+            UserId = userId,
+            Name = name,
+            Description = description,
+            AccountType = accountType
+        };
+    }
+
+    public void Update(
+        string name,
+        AccountTypeEnum accountType,
+        string? description = null)
+    {
+        Name = name;
+        AccountType = accountType;
+        Description = description;
+    }
 }

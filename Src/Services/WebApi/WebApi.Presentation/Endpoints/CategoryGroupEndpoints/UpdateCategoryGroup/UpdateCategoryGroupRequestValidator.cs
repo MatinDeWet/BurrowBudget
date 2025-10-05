@@ -7,11 +7,11 @@ public class UpdateCategoryGroupRequestValidator : Validator<UpdateCategoryGroup
 {
     public UpdateCategoryGroupRequestValidator()
     {
-        RuleFor(x => x.Id)
-            .NotEmpty();
-
         RuleFor(x => x.Name)
             .StringInput(32);
+
+        RuleFor(x => x.Description)
+            .StringInput(256, false);
 
         RuleFor(x => x.Description)
             .StringInput(256);

@@ -11,7 +11,7 @@ public class CreateCategoryGroupRequestValidator : Validator<CreateCategoryGroup
             .StringInput(32);
 
         RuleFor(x => x.Description)
-            .StringInput(256);
+            .StringInput(256, false);
 
         RuleFor(x => x.SortOrder)
             .NotEmpty();

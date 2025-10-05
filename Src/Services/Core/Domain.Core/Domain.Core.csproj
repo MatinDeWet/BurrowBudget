@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\..\..\Utilities\Domain.Base\Domain.Base.csproj" />
+    <ProjectReference Include="..\..\..\Utilities\Searchable\Searchable.Domain\Searchable.Domain.csproj" />
   </ItemGroup>
 </Project>

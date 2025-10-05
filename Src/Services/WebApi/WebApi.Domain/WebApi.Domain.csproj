@@ -5,7 +5,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Utilities\Searchable\Searchable.Domain\Searchable.Domain.csproj" />
     <ProjectReference Include="..\..\Core\Domain.Core\Domain.Core.csproj" />
   </ItemGroup>
 

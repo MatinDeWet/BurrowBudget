@@ -31,6 +31,13 @@ internal partial class CategoryConfig : IEntityTypeConfiguration<Category>
             .HasDefaultValue(true)
             .IsRequired();
 
+        entity.HasGeneratedTsVectorColumn(
+            p => p.SearchVector,
+            "english",
+            p => new { p.Name, p.Description })
+            .HasIndex(p => p.SearchVector)
+            .HasMethod("GIN");
+
         entity.HasOne(d => d.User)
             .WithMany(p => p.Categories)
             .HasForeignKey(d => d.UserId)

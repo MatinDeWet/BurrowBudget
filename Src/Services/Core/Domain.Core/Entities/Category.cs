@@ -1,7 +1,9 @@
 ﻿using Domain.Base.Implementation;
+using NpgsqlTypes;
+using Searchable.Domain;
 
 namespace Domain.Core.Entities;
-public class Category : Entity<Guid>
+public class Category : Entity<Guid>, ISearchableEntity
 {
     public Guid UserId { get; private set; }
     public virtual User User { get; private set; }
@@ -16,6 +18,8 @@ public class Category : Entity<Guid>
 
     public Guid CategoryGroupId { get; private set; }
     public virtual CategoryGroup CategoryGroup { get; private set; }
+
+    public NpgsqlTsVector SearchVector { get; }
 
     public static Category Create(
         Guid userId,

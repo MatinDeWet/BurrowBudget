@@ -17,6 +17,8 @@ public class Account : Entity<Guid>, ISearchableEntity
 
     public NpgsqlTsVector SearchVector { get; }
 
+    public List<TransactionImportBatch> TransactionImportBatches { get; private set; } = [];
+
     public static Account Create(
         Guid userId,
         string name,

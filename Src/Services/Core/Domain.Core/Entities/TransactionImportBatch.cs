@@ -5,13 +5,13 @@ using Domain.Core.Extensions;
 namespace Domain.Core.Entities;
 public class TransactionImportBatch : Entity<Guid>
 {
-    public Guid AccountId { get; set; }
-    public virtual Account Account { get; set; }
+    public Guid AccountId { get; private set; }
+    public virtual Account Account { get; private set; }
 
-    public DateTimeOffset ImportedAt { get; set; }
+    public DateTimeOffset ImportedAt { get; private set; }
 
     // Status & telemetry
-    public TransactionImportBatchStatusEnum Status { get; set; }
+    public TransactionImportBatchStatusEnum Status { get; private set; }
 
     public int RetryCount { get; private set; }
 
@@ -35,9 +35,22 @@ public class TransactionImportBatch : Entity<Guid>
     // Concurrency / background processing
     public uint Version { get; private set; }
 
-    public virtual ICollection<TransactionImportRow> Rows { get; set; } = [];
+    public virtual ICollection<TransactionImportRow> Rows { get; private set; } = [];
 
-    public virtual TransactionImportFile File { get; set; }
+    public virtual TransactionImportFile File { get; private set; }
+
+    public static TransactionImportBatch Create(Guid accountId)
+    {
+        var batch = new TransactionImportBatch
+        {
+            Id = Guid.CreateVersion7(),
+            AccountId = accountId,
+            Status = TransactionImportBatchStatusEnum.PendingFileUpload
+        };
+
+        batch.Stamp(batch.Status, DateTimeOffset.Now);
+        return batch;
+    }
 
     public void Transition(TransactionImportBatchStatusEnum next, DateTimeOffset? now = null)
     {
@@ -64,6 +77,9 @@ public class TransactionImportBatch : Entity<Guid>
     {
         switch (next)
         {
+            case TransactionImportBatchStatusEnum.PendingFileUpload:
+                ImportedAt = ts;
+                break;
             case TransactionImportBatchStatusEnum.FileUploaded:
                 UploadedAt ??= ts;
                 break;

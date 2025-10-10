@@ -3,41 +3,29 @@ using Domain.Core.Enums;
 using Domain.Core.Extensions;
 
 namespace Domain.Core.Entities;
+
 public class TransactionImportBatch : Entity<Guid>
 {
     public Guid AccountId { get; private set; }
-    public virtual Account Account { get; private set; }
+    public virtual Account Account { get; private set; } = null!;
 
     public DateTimeOffset ImportedAt { get; private set; }
-
-    // Status & telemetry
     public TransactionImportBatchStatusEnum Status { get; private set; }
-
     public int RetryCount { get; private set; }
-
     public string? Error { get; private set; }
 
-    // Timestamps (audit)
     public DateTimeOffset? UploadedAt { get; private set; }
-
     public DateTimeOffset? QueuedAt { get; private set; }
-
     public DateTimeOffset? StartedAt { get; private set; }
-
     public DateTimeOffset? CompletedAt { get; private set; }
-
     public DateTimeOffset? FailedAt { get; private set; }
-
     public DateTimeOffset? CanceledAt { get; private set; }
-
     public DateTimeOffset? SupersededAt { get; private set; }
 
-    // Concurrency / background processing
     public uint Version { get; private set; }
 
     public virtual ICollection<TransactionImportRow> Rows { get; private set; } = [];
-
-    public virtual TransactionImportFile File { get; private set; }
+    public virtual TransactionImportFile? File { get; private set; }
 
     public static TransactionImportBatch Create(Guid accountId)
     {
@@ -48,7 +36,7 @@ public class TransactionImportBatch : Entity<Guid>
             Status = TransactionImportBatchStatusEnum.PendingFileUpload
         };
 
-        batch.Stamp(batch.Status, DateTimeOffset.Now);
+        batch.Stamp(batch.Status, DateTimeOffset.UtcNow);
         return batch;
     }
 

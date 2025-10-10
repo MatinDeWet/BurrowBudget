@@ -3,8 +3,9 @@ public enum TransactionImportRowStatusEnum
 {
     Unprocessed = 0,
     Parsed = 1,
-    Mapped = 2,
-    Promoted = 3,
-    Skipped = 4,
-    Duplicate = 5,
+    Normalized = 2,
+    Duplicate = 3,
+    Rejected = 4,
+    Skipped = 5,
+    Imported = 6
 }

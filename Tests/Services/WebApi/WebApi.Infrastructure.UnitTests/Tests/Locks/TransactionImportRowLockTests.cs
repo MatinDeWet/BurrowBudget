@@ -42,11 +42,17 @@ public class TransactionImportRowLockTests
         // Arrange
         var row = TransactionImportRow.Create(
             _testBatchId,
+            1,
+            "{\"date\":\"2025-01-15\",\"amount\":\"100.00\"}",
             new DateOnly(2025, 1, 15),
             "100.00",
             "Test Transaction",
-            "FIT123",
-            "DEBIT");
+            "DEBIT",
+            null,
+            null,
+            null,
+            null,
+            "FIT123");
 
         var accounts = new List<Account>
         {
@@ -83,11 +89,17 @@ public class TransactionImportRowLockTests
         // Arrange
         var row = TransactionImportRow.Create(
             _otherBatchId,
+            1,
+            "{\"date\":\"2025-01-15\",\"amount\":\"100.00\"}",
             new DateOnly(2025, 1, 15),
             "100.00",
             "Test Transaction",
-            "FIT123",
-            "DEBIT");
+            "DEBIT",
+            null,
+            null,
+            null,
+            null,
+            "FIT123");
 
         var accounts = new List<Account>
         {
@@ -142,6 +154,8 @@ public class TransactionImportRowLockTests
         // Arrange
         var row = TransactionImportRow.Create(
             _testBatchId,
+            1,
+            "{\"date\":\"2025-01-15\",\"amount\":\"100.00\"}",
             new DateOnly(2025, 1, 15),
             "100.00",
             "Test Transaction");
@@ -176,6 +190,8 @@ public class TransactionImportRowLockTests
         // Arrange
         var row = TransactionImportRow.Create(
             _testBatchId,
+            1,
+            "{\"date\":\"2025-01-15\",\"amount\":\"100.00\"}",
             new DateOnly(2025, 1, 15),
             "100.00",
             "Test Transaction");
@@ -219,6 +235,8 @@ public class TransactionImportRowLockTests
         // Arrange
         var row = TransactionImportRow.Create(
             _otherBatchId,
+            1,
+            "{\"date\":\"2025-01-15\",\"amount\":\"100.00\"}",
             new DateOnly(2025, 1, 15),
             "100.00",
             "Test Transaction");
@@ -278,10 +296,10 @@ public class TransactionImportRowLockTests
 
         var rows = new List<TransactionImportRow>
         {
-            TransactionImportRow.Create(_testBatchId, new DateOnly(2025, 1, 15), "100.00", "Row 1"),
-            TransactionImportRow.Create(_testBatchId, new DateOnly(2025, 1, 16), "200.00", "Row 2"),
-            TransactionImportRow.Create(_testBatchId, new DateOnly(2025, 1, 17), "300.00", "Row 3"),
-            TransactionImportRow.Create(_otherBatchId, new DateOnly(2025, 1, 18), "400.00", "Row 4")
+            TransactionImportRow.Create(_testBatchId, 1, "{\"desc\":\"Row 1\"}", new DateOnly(2025, 1, 15), "100.00", "Row 1"),
+            TransactionImportRow.Create(_testBatchId, 2, "{\"desc\":\"Row 2\"}", new DateOnly(2025, 1, 16), "200.00", "Row 2"),
+            TransactionImportRow.Create(_testBatchId, 3, "{\"desc\":\"Row 3\"}", new DateOnly(2025, 1, 17), "300.00", "Row 3"),
+            TransactionImportRow.Create(_otherBatchId, 1, "{\"desc\":\"Row 4\"}", new DateOnly(2025, 1, 18), "400.00", "Row 4")
         };
 
         Mock<DbSet<Account>> mockAccountDbSet = accounts.BuildMockDbSet();
@@ -319,7 +337,7 @@ public class TransactionImportRowLockTests
 
         var rows = new List<TransactionImportRow>
         {
-            TransactionImportRow.Create(_otherBatchId, new DateOnly(2025, 1, 15), "100.00", "Row 1")
+            TransactionImportRow.Create(_otherBatchId, 1, "{\"desc\":\"Row 1\"}", new DateOnly(2025, 1, 15), "100.00", "Row 1")
         };
 
         Mock<DbSet<Account>> mockAccountDbSet = accounts.BuildMockDbSet();
@@ -356,9 +374,9 @@ public class TransactionImportRowLockTests
 
         var rows = new List<TransactionImportRow>
         {
-            TransactionImportRow.Create(_testBatchId, new DateOnly(2025, 1, 15), "100.00", "Row 1"),
-            TransactionImportRow.Create(_testBatchId, new DateOnly(2025, 1, 16), "200.00", "Row 2"),
-            TransactionImportRow.Create(_testBatchId, new DateOnly(2025, 1, 17), "300.00", "Row 3")
+            TransactionImportRow.Create(_testBatchId, 1, "{\"desc\":\"Row 1\"}", new DateOnly(2025, 1, 15), "100.00", "Row 1"),
+            TransactionImportRow.Create(_testBatchId, 2, "{\"desc\":\"Row 2\"}", new DateOnly(2025, 1, 16), "200.00", "Row 2"),
+            TransactionImportRow.Create(_testBatchId, 3, "{\"desc\":\"Row 3\"}", new DateOnly(2025, 1, 17), "300.00", "Row 3")
         };
 
         Mock<DbSet<Account>> mockAccountDbSet = accounts.BuildMockDbSet();
@@ -396,9 +414,9 @@ public class TransactionImportRowLockTests
 
         var rows = new List<TransactionImportRow>
         {
-            TransactionImportRow.Create(_testBatchId, new DateOnly(2025, 1, 15), "100.00", "Alpha"),
-            TransactionImportRow.Create(_testBatchId, new DateOnly(2025, 1, 16), "200.00", "Beta"),
-            TransactionImportRow.Create(_testBatchId, new DateOnly(2025, 1, 17), "300.00", "Gamma")
+            TransactionImportRow.Create(_testBatchId, 1, "{\"desc\":\"Alpha\"}", new DateOnly(2025, 1, 15), "100.00", "Alpha"),
+            TransactionImportRow.Create(_testBatchId, 2, "{\"desc\":\"Beta\"}", new DateOnly(2025, 1, 16), "200.00", "Beta"),
+            TransactionImportRow.Create(_testBatchId, 3, "{\"desc\":\"Gamma\"}", new DateOnly(2025, 1, 17), "300.00", "Gamma")
         };
 
         Mock<DbSet<Account>> mockAccountDbSet = accounts.BuildMockDbSet();
@@ -439,7 +457,7 @@ public class TransactionImportRowLockTests
 
         var rows = new List<TransactionImportRow>
         {
-            TransactionImportRow.Create(_testBatchId, new DateOnly(2025, 1, 15), "100.00", "Row 1")
+            TransactionImportRow.Create(_testBatchId, 1, "{\"desc\":\"Row 1\"}", new DateOnly(2025, 1, 15), "100.00", "Row 1")
         };
 
         Mock<DbSet<Account>> mockAccountDbSet = accounts.BuildMockDbSet();

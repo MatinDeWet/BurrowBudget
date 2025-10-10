@@ -52,7 +52,7 @@
     <!-- CSV -->
     <PackageVersion Include="CsvHelper" Version="33.1.0" />
     <!-- Azure -->
-    <PackageVersion Include="Azure.Storage.Blobs" Version="12.25.0" />
+    <PackageVersion Include="Azure.Storage.Blobs" Version="12.25.1" />
     <!-- Files -->
     <PackageVersion Include="Microsoft.AspNetCore.StaticFiles" Version="2.3.0" />
   </ItemGroup>

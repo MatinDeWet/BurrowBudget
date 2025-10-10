@@ -80,6 +80,10 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.Infrastructure.UnitTests", "Tests\Services\WebApi\WebApi.Infrastructure.UnitTests\WebApi.Infrastructure.UnitTests.csproj", "{CDA29219-1F0B-4094-9B7E-EC93D17434AA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations", "Integrations", "{0BEF556C-6F1B-43CA-9B5B-65A595F2A342}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blob.Integration", "Src\Integrations\Blob.Integration\Blob.Integration.csproj", "{3894C8DA-828B-43E2-83D5-1A4E905C234A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -178,6 +182,10 @@ Global
 		{CDA29219-1F0B-4094-9B7E-EC93D17434AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDA29219-1F0B-4094-9B7E-EC93D17434AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDA29219-1F0B-4094-9B7E-EC93D17434AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3894C8DA-828B-43E2-83D5-1A4E905C234A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3894C8DA-828B-43E2-83D5-1A4E905C234A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3894C8DA-828B-43E2-83D5-1A4E905C234A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3894C8DA-828B-43E2-83D5-1A4E905C234A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -215,6 +223,8 @@ Global
 		{6616E326-02F4-4767-8719-40F903651DFD} = {16CE9A10-10A0-4539-BD23-8704AE11E572}
 		{86865FC2-9203-860A-D50B-EF1C7B043C5E} = {6616E326-02F4-4767-8719-40F903651DFD}
 		{CDA29219-1F0B-4094-9B7E-EC93D17434AA} = {6616E326-02F4-4767-8719-40F903651DFD}
+		{0BEF556C-6F1B-43CA-9B5B-65A595F2A342} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{3894C8DA-828B-43E2-83D5-1A4E905C234A} = {0BEF556C-6F1B-43CA-9B5B-65A595F2A342}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A2548EEF-CA1D-4B35-A342-98FD7C3F38C5}

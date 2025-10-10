@@ -23,4 +23,24 @@ public interface IBlobService
         string blobName,
         string containerName,
         CancellationToken cancellationToken = default);
+
+    Task AddBlobMetadataAsync(
+        string blobName,
+        string containerName,
+        Dictionary<string, string> metadata,
+        CancellationToken cancellationToken = default);
+
+    Task<string> CreateEmptyBlobAsync(
+        string containerName,
+        string? blobName = null,
+        string contentType = "application/octet-stream",
+        Dictionary<string, string>? metadata = null,
+        CancellationToken cancellationToken = default);
+
+    Task<Uri> CreateBlobSasTokenAsync(
+        string blobName,
+        string containerName,
+        TimeSpan? expiresIn = null,
+        Azure.Storage.Sas.BlobSasPermissions permissions = Azure.Storage.Sas.BlobSasPermissions.Read,
+        CancellationToken cancellationToken = default);
 }

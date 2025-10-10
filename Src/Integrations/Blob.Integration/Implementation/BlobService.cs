@@ -1,6 +1,7 @@
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
 using Blob.Integration.Contracts;
 using Blob.Integration.Extensions;
 using Blob.Integration.Options;
@@ -112,6 +113,121 @@ public sealed class BlobService : IBlobService
         Response<BlobProperties> propertiesResponse = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
 
         return propertiesResponse.Value.Metadata.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+    }
+
+    public async Task AddBlobMetadataAsync(
+        string blobName,
+        string containerName,
+        Dictionary<string, string> metadata,
+        CancellationToken cancellationToken = default)
+    {
+        ValidateMetadataInput(blobName, containerName);
+
+        if (metadata == null || metadata.Count == 0)
+        {
+            throw new ArgumentException("Metadata cannot be null or empty.", nameof(metadata));
+        }
+
+        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+        Response<bool> existsResponse = await blobClient.ExistsAsync(cancellationToken);
+        if (!existsResponse.Value)
+        {
+            throw new FileNotFoundException($"Blob '{blobName}' not found in container '{containerName}'");
+        }
+
+        // Get existing metadata
+        Response<BlobProperties> propertiesResponse = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
+        var existingMetadata = propertiesResponse.Value.Metadata.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        // Merge with new metadata (new values overwrite existing ones)
+        foreach (var kvp in metadata)
+        {
+            existingMetadata[kvp.Key] = kvp.Value;
+        }
+
+        // Set the updated metadata
+        await blobClient.SetMetadataAsync(existingMetadata, cancellationToken: cancellationToken);
+    }
+
+    public async Task<string> CreateEmptyBlobAsync(
+        string containerName,
+        string? blobName = null,
+        string contentType = "application/octet-stream",
+        Dictionary<string, string>? metadata = null,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(containerName))
+        {
+            throw new ArgumentException("Container name cannot be null or empty.", nameof(containerName));
+        }
+
+        BlobContainerClient containerClient = await GetOrCreateContainerAsync(containerName, cancellationToken);
+
+        // Use provided blob name or generate a new one
+        string finalBlobName = string.IsNullOrWhiteSpace(blobName) ? Guid.CreateVersion7().ToString() : blobName;
+        BlobClient blobClient = containerClient.GetBlobClient(finalBlobName);
+
+        // Create an empty blob with zero bytes
+        using var emptyStream = new MemoryStream(Array.Empty<byte>());
+
+        var uploadOptions = new BlobUploadOptions
+        {
+            Metadata = metadata,
+            HttpHeaders = new BlobHttpHeaders
+            {
+                ContentType = contentType
+            }
+        };
+
+        await blobClient.UploadAsync(emptyStream, uploadOptions, cancellationToken);
+
+        return finalBlobName;
+    }
+
+    public async Task<Uri> CreateBlobSasTokenAsync(
+        string blobName,
+        string containerName,
+        TimeSpan? expiresIn = null,
+        BlobSasPermissions permissions = BlobSasPermissions.Read,
+        CancellationToken cancellationToken = default)
+    {
+        ValidateMetadataInput(blobName, containerName);
+
+        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+        Response<bool> existsResponse = await blobClient.ExistsAsync(cancellationToken);
+        if (!existsResponse.Value)
+        {
+            throw new FileNotFoundException($"Blob '{blobName}' not found in container '{containerName}'");
+        }
+
+        // Default expiration is 1 hour if not specified
+        TimeSpan expiration = expiresIn ?? TimeSpan.FromHours(1);
+
+        // Check if we can generate SAS tokens (requires connection string with account key)
+        if (!blobClient.CanGenerateSasUri)
+        {
+            throw new InvalidOperationException(
+                "Cannot generate SAS token. Ensure the BlobServiceClient is created with a connection string that includes the account key.");
+        }
+
+        var sasBuilder = new BlobSasBuilder
+        {
+            BlobContainerName = containerName,
+            BlobName = blobName,
+            Resource = "b", // "b" for blob
+            StartsOn = DateTimeOffset.UtcNow.AddMinutes(-5), // Start time with 5 min clock skew allowance
+            ExpiresOn = DateTimeOffset.UtcNow.Add(expiration)
+        };
+
+        sasBuilder.SetPermissions(permissions);
+
+        Uri sasUri = blobClient.GenerateSasUri(sasBuilder);
+
+        return sasUri;
     }
 
     #region Private Methods

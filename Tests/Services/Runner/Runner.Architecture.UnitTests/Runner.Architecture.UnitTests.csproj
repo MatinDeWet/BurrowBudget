@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetArchTest.Rules" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Src\Services\Runner\Runner.Application\Runner.Application.csproj" />
+    <ProjectReference Include="..\..\..\..\Src\Services\Runner\Runner.Domain\Runner.Domain.csproj" />
+    <ProjectReference Include="..\..\..\..\Src\Services\Runner\Runner.Infrastructure\Runner.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\..\Src\Services\Runner\Runner.Presentation\Runner.Presentation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

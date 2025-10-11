@@ -11,6 +11,12 @@ services:
             context: .
             dockerfile: Src/Services/WebApi/WebApi.Presentation/Dockerfile
 
+    runner.presentation:
+        image: ${DOCKER_REGISTRY-}runnerpresentation
+        build:
+            context: .
+            dockerfile: Src/Services/Runner/Runner.Presentation/Dockerfile
+
 volumes:
     database_data:
     azurite_data:

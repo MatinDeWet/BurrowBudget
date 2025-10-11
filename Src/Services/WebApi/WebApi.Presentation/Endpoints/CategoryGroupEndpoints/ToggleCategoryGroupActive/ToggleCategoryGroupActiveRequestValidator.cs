@@ -1,4 +1,4 @@
-using WebApi.Application.Features.CategoryGroupFeatures.ToggleCategoryGroupActive;
+using WebApi.Application.Features.CategoryGroupFeatures.Commands.ToggleCategoryGroupActive;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.CategoryGroupEndpoints.ToggleCategoryGroupActive;

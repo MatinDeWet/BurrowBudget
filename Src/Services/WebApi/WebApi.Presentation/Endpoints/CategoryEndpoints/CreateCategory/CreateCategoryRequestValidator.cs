@@ -1,4 +1,4 @@
-﻿using WebApi.Application.Features.CategoryFeatures.CreateCategory;
+﻿using WebApi.Application.Features.CategoryFeatures.Commands.CreateCategory;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.CategoryEndpoints.CreateCategory;

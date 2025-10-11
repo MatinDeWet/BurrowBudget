@@ -1,4 +1,4 @@
-using WebApi.Application.Features.CategoryFeatures.GetCategoryById;
+using WebApi.Application.Features.CategoryFeatures.Queries.GetCategoryById;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.CategoryEndpoints.GetCategoryById;

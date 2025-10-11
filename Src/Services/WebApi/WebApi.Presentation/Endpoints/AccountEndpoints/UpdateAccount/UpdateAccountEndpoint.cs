@@ -1,5 +1,5 @@
 using CQRS.Contracts;
-using WebApi.Application.Features.AccountFeatures.UpdateAccount;
+using WebApi.Application.Features.AccountFeatures.Queries.UpdateAccount;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.AccountEndpoints.UpdateAccount;

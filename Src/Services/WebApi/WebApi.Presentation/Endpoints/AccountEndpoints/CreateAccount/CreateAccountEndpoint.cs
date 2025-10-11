@@ -1,5 +1,5 @@
 using CQRS.Contracts;
-using WebApi.Application.Features.AccountFeatures.CreateAccount;
+using WebApi.Application.Features.AccountFeatures.Commands.CreateAccount;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.AccountEndpoints.CreateAccount;

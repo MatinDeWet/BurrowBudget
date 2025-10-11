@@ -1,4 +1,4 @@
-using WebApi.Application.Features.CategoryGroupFeatures.GetCategoryGroupCategoryCount;
+using WebApi.Application.Features.CategoryGroupFeatures.Queries.GetCategoryGroupCategoryCount;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.CategoryGroupEndpoints.GetCategoryGroupCategoryCount;

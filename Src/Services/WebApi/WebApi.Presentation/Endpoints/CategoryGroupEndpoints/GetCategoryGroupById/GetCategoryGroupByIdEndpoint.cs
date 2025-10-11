@@ -1,5 +1,5 @@
 using CQRS.Contracts;
-using WebApi.Application.Features.CategoryGroupFeatures.GetCategoryGroupById;
+using WebApi.Application.Features.CategoryGroupFeatures.Queries.GetCategoryGroupById;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.CategoryGroupEndpoints.GetCategoryGroupById;

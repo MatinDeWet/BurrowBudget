@@ -1,4 +1,4 @@
-using WebApi.Application.Features.CategoryFeatures.SearchCategories;
+using WebApi.Application.Features.CategoryFeatures.Queries.SearchCategories;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.CategoryEndpoints.SearchCategories;

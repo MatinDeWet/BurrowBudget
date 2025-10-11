@@ -1,5 +1,5 @@
 using CQRS.Contracts;
-using WebApi.Application.Features.AccountFeatures.GetAccountById;
+using WebApi.Application.Features.AccountFeatures.Queries.GetAccountById;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.AccountEndpoints.GetAccountById;

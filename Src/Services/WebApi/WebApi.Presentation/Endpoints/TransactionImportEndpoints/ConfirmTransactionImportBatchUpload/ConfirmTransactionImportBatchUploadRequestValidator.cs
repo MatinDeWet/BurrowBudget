@@ -1,4 +1,4 @@
-using WebApi.Application.Features.TransactionImportFeatures.ConfirmTransactionImportBatchUpload;
+using WebApi.Application.Features.TransactionImportFeatures.Commands.ConfirmTransactionImportBatchUpload;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.TransactionImportEndpoints.ConfirmTransactionImportBatchUpload;

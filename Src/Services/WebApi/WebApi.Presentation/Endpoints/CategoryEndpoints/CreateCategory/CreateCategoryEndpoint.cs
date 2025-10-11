@@ -1,5 +1,5 @@
 ﻿using CQRS.Contracts;
-using WebApi.Application.Features.CategoryFeatures.CreateCategory;
+using WebApi.Application.Features.CategoryFeatures.Commands.CreateCategory;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.CategoryEndpoints.CreateCategory;

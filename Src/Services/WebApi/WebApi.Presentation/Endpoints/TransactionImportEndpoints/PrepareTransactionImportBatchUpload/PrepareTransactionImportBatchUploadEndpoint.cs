@@ -1,5 +1,5 @@
 using CQRS.Contracts;
-using WebApi.Application.Features.TransactionImportFeatures.PrepareTransactionImportBatchUpload;
+using WebApi.Application.Features.TransactionImportFeatures.Commands.PrepareTransactionImportBatchUpload;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.TransactionImportEndpoints.PrepareTransactionImportBatchUpload;

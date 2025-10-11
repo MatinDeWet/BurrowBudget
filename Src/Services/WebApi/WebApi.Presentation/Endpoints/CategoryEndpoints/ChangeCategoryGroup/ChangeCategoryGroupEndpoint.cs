@@ -1,5 +1,5 @@
 ﻿using CQRS.Contracts;
-using WebApi.Application.Features.CategoryFeatures.ChangeCategoryGroup;
+using WebApi.Application.Features.CategoryFeatures.Commands.ChangeCategoryGroup;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.CategoryEndpoints.ChangeCategoryGroup;

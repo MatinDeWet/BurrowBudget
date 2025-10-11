@@ -1,4 +1,4 @@
-using WebApi.Application.Features.AccountFeatures.UpdateAccount;
+using WebApi.Application.Features.AccountFeatures.Queries.UpdateAccount;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.AccountEndpoints.UpdateAccount;

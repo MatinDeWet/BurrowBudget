@@ -1,4 +1,4 @@
-using WebApi.Application.Features.AccountFeatures.CreateAccount;
+using WebApi.Application.Features.AccountFeatures.Commands.CreateAccount;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.AccountEndpoints.CreateAccount;

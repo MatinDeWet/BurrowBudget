@@ -1,4 +1,4 @@
-using WebApi.Application.Features.CategoryFeatures.DeleteCategory;
+using WebApi.Application.Features.CategoryFeatures.Commands.DeleteCategory;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.CategoryEndpoints.DeleteCategory;

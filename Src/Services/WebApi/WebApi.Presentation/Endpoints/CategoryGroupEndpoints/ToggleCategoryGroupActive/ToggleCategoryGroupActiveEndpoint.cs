@@ -1,5 +1,5 @@
 using CQRS.Contracts;
-using WebApi.Application.Features.CategoryGroupFeatures.ToggleCategoryGroupActive;
+using WebApi.Application.Features.CategoryGroupFeatures.Commands.ToggleCategoryGroupActive;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.CategoryGroupEndpoints.ToggleCategoryGroupActive;

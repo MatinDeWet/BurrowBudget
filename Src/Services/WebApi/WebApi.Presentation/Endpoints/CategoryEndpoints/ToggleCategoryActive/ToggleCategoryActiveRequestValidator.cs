@@ -1,4 +1,4 @@
-using WebApi.Application.Features.CategoryFeatures.ToggleCategoryActive;
+using WebApi.Application.Features.CategoryFeatures.Commands.ToggleCategoryActive;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.CategoryEndpoints.ToggleCategoryActive;

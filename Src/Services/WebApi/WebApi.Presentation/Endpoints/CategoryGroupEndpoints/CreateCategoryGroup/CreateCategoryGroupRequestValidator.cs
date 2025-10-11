@@ -1,4 +1,4 @@
-using WebApi.Application.Features.CategoryGroupFeatures.CreateCategoryGroup;
+using WebApi.Application.Features.CategoryGroupFeatures.Commands.CreateCategoryGroup;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.CategoryGroupEndpoints.CreateCategoryGroup;

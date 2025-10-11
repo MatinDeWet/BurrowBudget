@@ -1,4 +1,4 @@
-using WebApi.Application.Features.AccountFeatures.DeleteAccount;
+using WebApi.Application.Features.AccountFeatures.Commands.DeleteAccount;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.AccountEndpoints.DeleteAccount;

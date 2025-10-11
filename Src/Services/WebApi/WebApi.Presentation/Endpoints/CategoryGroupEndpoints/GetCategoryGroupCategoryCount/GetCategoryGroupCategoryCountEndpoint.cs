@@ -1,5 +1,5 @@
 using CQRS.Contracts;
-using WebApi.Application.Features.CategoryGroupFeatures.GetCategoryGroupCategoryCount;
+using WebApi.Application.Features.CategoryGroupFeatures.Queries.GetCategoryGroupCategoryCount;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.CategoryGroupEndpoints.GetCategoryGroupCategoryCount;

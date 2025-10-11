@@ -1,4 +1,4 @@
-﻿using WebApi.Application.Features.CategoryFeatures.ChangeCategoryGroup;
+﻿using WebApi.Application.Features.CategoryFeatures.Commands.ChangeCategoryGroup;
 
 namespace WebApi.Presentation.Endpoints.CategoryEndpoints.ChangeCategoryGroup;
 

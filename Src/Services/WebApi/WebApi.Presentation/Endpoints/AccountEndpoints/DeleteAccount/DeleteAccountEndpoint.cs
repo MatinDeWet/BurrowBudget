@@ -1,5 +1,5 @@
 using CQRS.Contracts;
-using WebApi.Application.Features.AccountFeatures.DeleteAccount;
+using WebApi.Application.Features.AccountFeatures.Commands.DeleteAccount;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.AccountEndpoints.DeleteAccount;

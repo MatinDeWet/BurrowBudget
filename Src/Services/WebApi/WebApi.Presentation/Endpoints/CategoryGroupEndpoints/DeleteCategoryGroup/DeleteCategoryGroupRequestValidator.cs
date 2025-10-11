@@ -1,4 +1,4 @@
-using WebApi.Application.Features.CategoryGroupFeatures.DeleteCategoryGroup;
+using WebApi.Application.Features.CategoryGroupFeatures.Commands.DeleteCategoryGroup;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.CategoryGroupEndpoints.DeleteCategoryGroup;

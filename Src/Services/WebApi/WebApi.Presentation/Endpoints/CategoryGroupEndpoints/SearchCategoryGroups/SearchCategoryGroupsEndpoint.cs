@@ -1,6 +1,6 @@
 using CQRS.Contracts;
 using Pagination.Models.Responses;
-using WebApi.Application.Features.CategoryGroupFeatures.SearchCategoryGroups;
+using WebApi.Application.Features.CategoryGroupFeatures.Queries.SearchCategoryGroups;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.CategoryGroupEndpoints.SearchCategoryGroups;

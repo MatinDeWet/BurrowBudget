@@ -1,4 +1,4 @@
-using WebApi.Application.Features.CategoryGroupFeatures.GetCategoryGroupCategories;
+using WebApi.Application.Features.CategoryGroupFeatures.Queries.GetCategoryGroupCategories;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.CategoryGroupEndpoints.GetCategoryGroupCategories;

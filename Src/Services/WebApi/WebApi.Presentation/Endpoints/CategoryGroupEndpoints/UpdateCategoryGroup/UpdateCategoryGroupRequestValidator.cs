@@ -1,4 +1,4 @@
-using WebApi.Application.Features.CategoryGroupFeatures.UpdateCategoryGroup;
+using WebApi.Application.Features.CategoryGroupFeatures.Commands.UpdateCategoryGroup;
 using WebApi.Presentation.Common.Validation;
 
 namespace WebApi.Presentation.Endpoints.CategoryGroupEndpoints.UpdateCategoryGroup;

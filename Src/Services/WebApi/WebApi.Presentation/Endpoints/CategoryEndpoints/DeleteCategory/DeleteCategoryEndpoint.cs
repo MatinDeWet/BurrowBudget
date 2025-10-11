@@ -1,5 +1,5 @@
 using CQRS.Contracts;
-using WebApi.Application.Features.CategoryFeatures.DeleteCategory;
+using WebApi.Application.Features.CategoryFeatures.Commands.DeleteCategory;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.CategoryEndpoints.DeleteCategory;

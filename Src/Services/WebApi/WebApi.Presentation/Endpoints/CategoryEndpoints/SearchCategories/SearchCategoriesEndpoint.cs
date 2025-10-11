@@ -1,6 +1,6 @@
 using CQRS.Contracts;
 using Pagination.Models.Responses;
-using WebApi.Application.Features.CategoryFeatures.SearchCategories;
+using WebApi.Application.Features.CategoryFeatures.Queries.SearchCategories;
 using WebApi.Presentation.Common.Helpers;
 
 namespace WebApi.Presentation.Endpoints.CategoryEndpoints.SearchCategories;

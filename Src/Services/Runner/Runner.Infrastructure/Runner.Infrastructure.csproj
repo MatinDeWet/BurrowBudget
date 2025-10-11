@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Infrastructure.Core\Infrastructure.Core.csproj" />
     <ProjectReference Include="..\Runner.Application\Runner.Application.csproj" />
   </ItemGroup>
 </Project>

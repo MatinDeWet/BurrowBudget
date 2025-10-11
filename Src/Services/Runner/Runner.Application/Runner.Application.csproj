@@ -1,5 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Integrations\Blob.Integration\Blob.Integration.csproj" />
+    <ProjectReference Include="..\..\..\Utilities\CQRS\CQRS.csproj" />
+    <ProjectReference Include="..\..\..\Utilities\Repository\Repository.Base\Repository.Base.csproj" />
     <ProjectReference Include="..\Runner.Domain\Runner.Domain.csproj" />
   </ItemGroup>
 </Project>

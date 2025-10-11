@@ -29,7 +29,7 @@ internal sealed class PrepareTransactionImportBatchUploadHandler(
         }
 
         // Generate a unique blob name for the upload
-        string blobName = $"{request.AccountId}/{Guid.NewGuid()}/{request.FileName}";
+        string blobName = Guid.CreateVersion7().ToString();
 
         await blobService.CreateEmptyBlobAsync(
             containerName: ContainerName,

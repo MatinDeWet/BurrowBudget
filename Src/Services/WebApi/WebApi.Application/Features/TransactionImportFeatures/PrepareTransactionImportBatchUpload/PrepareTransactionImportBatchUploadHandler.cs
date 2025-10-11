@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using Ardalis.Result;
-using Azure.Storage.Sas;
 using Blob.Integration.Contracts;
 using Blob.Integration.Extensions;
 using Domain.Core.Constants;
@@ -17,7 +16,7 @@ internal sealed class PrepareTransactionImportBatchUploadHandler(
     : ICommandManager<PrepareTransactionImportBatchUploadRequest, PrepareTransactionImportBatchUploadResponse>
 {
     private const string ContainerName = BlobNameConstants.TransactionImport;
-    private static readonly TimeSpan SasTokenExpiration = TimeSpan.FromHours(2);
+    private static readonly TimeSpan PresignedUrlExpiration = TimeSpan.FromHours(2);
 
     public async Task<Result<PrepareTransactionImportBatchUploadResponse>> Handle(PrepareTransactionImportBatchUploadRequest request, CancellationToken cancellationToken)
     {
@@ -29,8 +28,12 @@ internal sealed class PrepareTransactionImportBatchUploadHandler(
             return Result.NotFound($"Account with ID {request.AccountId} was not found.");
         }
 
-        string blobName = await blobService.CreateEmptyBlobAsync(
+        // Generate a unique blob name for the upload
+        string blobName = $"{request.AccountId}/{Guid.NewGuid()}/{request.FileName}";
+
+        await blobService.CreateEmptyBlobAsync(
             containerName: ContainerName,
+            blobName: blobName,
             contentType: request.ContentType,
             metadata: new Dictionary<string, string>
             {
@@ -41,11 +44,10 @@ internal sealed class PrepareTransactionImportBatchUploadHandler(
             },
             cancellationToken: cancellationToken);
 
-        Uri sasUri = await blobService.CreateBlobSasTokenAsync(
-            blobName: blobName,
+        string uploadUrl = await blobService.GetPresignedUploadUrlAsync(
             containerName: ContainerName,
-            expiration: SasTokenExpiration,
-            permissions: BlobSasPermissions.Read | BlobSasPermissions.Write | BlobSasPermissions.Create,
+            blobName: blobName,
+            expiry: PresignedUrlExpiration,
             cancellationToken: cancellationToken);
 
         var importFile = TransactionImportFile.Create(
@@ -64,8 +66,8 @@ internal sealed class PrepareTransactionImportBatchUploadHandler(
         return new PrepareTransactionImportBatchUploadResponse
         {
             ImportBatchId = batch.Id,
-            UploadUrl = sasUri.ToString(),
-            SasExpiresAt = DateTimeOffset.UtcNow.Add(SasTokenExpiration)
+            UploadUrl = uploadUrl,
+            SasExpiresAt = DateTimeOffset.UtcNow.Add(PresignedUrlExpiration)
         };
     }
 }

@@ -3,52 +3,62 @@ namespace Blob.Integration.Contracts;
 public interface IBlobService
 {
     /// <summary>
-    /// Uploads a blob to the specified bucket
+    /// Uploads a blob to the specified container
     /// </summary>
-    Task<string> UploadBlobAsync(string bucketName, string objectName, Stream data, string contentType, Dictionary<string, string>? metadata = null, CancellationToken cancellationToken = default);
+    Task<string> UploadBlobAsync(string containerName, string blobName, Stream data, string contentType, Dictionary<string, string>? metadata = null, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Downloads a blob from the specified bucket
+    /// Downloads a blob from the specified container
     /// </summary>
-    Task<Stream> DownloadBlobAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
+    Task<Stream> DownloadBlobAsync(string containerName, string blobName, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Deletes a blob from the specified bucket
+    /// Deletes a blob from the specified container
     /// </summary>
-    Task DeleteBlobAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
+    Task DeleteBlobAsync(string containerName, string blobName, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Adds metadata to an existing blob
     /// </summary>
-    Task AddMetadataAsync(string bucketName, string objectName, Dictionary<string, string> metadata, CancellationToken cancellationToken = default);
+    Task AddMetadataAsync(string containerName, string blobName, Dictionary<string, string> metadata, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Removes metadata from an existing blob
     /// </summary>
-    Task RemoveMetadataAsync(string bucketName, string objectName, IEnumerable<string> metadataKeys, CancellationToken cancellationToken = default);
+    Task RemoveMetadataAsync(string containerName, string blobName, IEnumerable<string> metadataKeys, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Updates metadata on an existing blob (replaces existing metadata with new values)
     /// </summary>
-    Task UpdateMetadataAsync(string bucketName, string objectName, Dictionary<string, string> metadata, CancellationToken cancellationToken = default);
+    Task UpdateMetadataAsync(string containerName, string blobName, Dictionary<string, string> metadata, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets metadata from an existing blob
     /// </summary>
-    Task<Dictionary<string, string>> GetMetadataAsync(string bucketName, string objectName, CancellationToken cancellationToken = default);
+    Task<Dictionary<string, string>> GetMetadataAsync(string containerName, string blobName, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Creates an empty blob (0 bytes) in the specified bucket
+    /// Creates an empty blob (0 bytes) in the specified container
     /// </summary>
-    Task CreateEmptyBlobAsync(string bucketName, string objectName, string contentType = "application/octet-stream", Dictionary<string, string>? metadata = null, CancellationToken cancellationToken = default);
+    Task CreateEmptyBlobAsync(string containerName, string blobName, string contentType = "application/octet-stream", Dictionary<string, string>? metadata = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Generates a presigned URL for uploading to a blob (PUT)
     /// </summary>
-    Task<string> GetPresignedUploadUrlAsync(string bucketName, string objectName, TimeSpan expiry, CancellationToken cancellationToken = default);
+    Task<string> GetPresignedUploadUrlAsync(string containerName, string blobName, TimeSpan expiry, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Generates a presigned URL for downloading a blob (GET)
     /// </summary>
-    Task<string> GetPresignedDownloadUrlAsync(string bucketName, string objectName, TimeSpan expiry, CancellationToken cancellationToken = default);
+    Task<string> GetPresignedDownloadUrlAsync(string containerName, string blobName, TimeSpan expiry, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Checks if a blob exists in the specified container
+    /// </summary>
+    Task<bool> BlobExistsAsync(string containerName, string blobName, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the size of a blob in bytes
+    /// </summary>
+    Task<long> GetBlobSizeAsync(string containerName, string blobName, CancellationToken cancellationToken = default);
 }

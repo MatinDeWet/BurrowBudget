@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Runner.Infrastructure\Runner.Infrastructure.csproj" />
+  </ItemGroup>
 </Project>

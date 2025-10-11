@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Blob.Integration;
 using CQRS;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
@@ -21,6 +22,8 @@ builder.Services.AddCQRSSupport(typeof(IApplicationPointer));
 builder.Services.AddDatabase(builder.Configuration, builder.Environment.IsDevelopment() || builder.Environment.IsStaging());
 builder.Services.AddSecuredRepositories(typeof(IInfrastructurePointer));
 builder.Services.AddRepositories(typeof(IInfrastructurePointer));
+
+builder.Services.AddBlobSupport(builder.Configuration);
 
 builder.Services
     .AddAuthenticationJwtBearer(o => o.SigningKey = builder.Configuration["Auth:JWTSigningKey"])

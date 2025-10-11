@@ -40,6 +40,20 @@ public class TransactionImportBatch : Entity<Guid>
         return batch;
     }
 
+    public static TransactionImportBatch Create(Guid accountId, TransactionImportFile file)
+    {
+        var batch = new TransactionImportBatch
+        {
+            Id = Guid.CreateVersion7(),
+            AccountId = accountId,
+            Status = TransactionImportBatchStatusEnum.PendingFileUpload,
+            File = file
+        };
+
+        batch.Stamp(batch.Status, DateTimeOffset.UtcNow);
+        return batch;
+    }
+
     public void Transition(TransactionImportBatchStatusEnum next, DateTimeOffset? now = null)
     {
         if (!TransactionJobStatusPolicyExtension.CanTransition(Status, next))

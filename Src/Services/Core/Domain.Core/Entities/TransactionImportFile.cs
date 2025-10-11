@@ -13,7 +13,7 @@ public class TransactionImportFile : Entity<Guid>
     public string MimeType { get; private set; } = null!;
     public string BlobContainer { get; private set; } = null!;
     public string BlobName { get; private set; } = null!;
-    public string Sha256 { get; private set; } = null!;
+    public string? Sha256 { get; private set; }
     public long SizeInBytes { get; private set; }
 
     public static TransactionImportFile Create(
@@ -24,7 +24,6 @@ public class TransactionImportFile : Entity<Guid>
         string mimeType,
         string blobContainer,
         string blobName,
-        string sha256,
         long sizeInBytes)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(fullFileName);
@@ -33,7 +32,6 @@ public class TransactionImportFile : Entity<Guid>
         ArgumentException.ThrowIfNullOrWhiteSpace(mimeType);
         ArgumentException.ThrowIfNullOrWhiteSpace(blobContainer);
         ArgumentException.ThrowIfNullOrWhiteSpace(blobName);
-        ArgumentException.ThrowIfNullOrWhiteSpace(sha256);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(sizeInBytes);
 
         return new TransactionImportFile
@@ -46,8 +44,55 @@ public class TransactionImportFile : Entity<Guid>
             MimeType = mimeType,
             BlobContainer = blobContainer,
             BlobName = blobName,
-            Sha256 = sha256,
             SizeInBytes = sizeInBytes
         };
+    }
+
+    public static TransactionImportFile Create(
+        string fullFileName,
+        string fileName,
+        string fileExtension,
+        string mimeType,
+        string blobContainer,
+        string blobName,
+        long sizeInBytes)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(fullFileName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileExtension);
+        ArgumentException.ThrowIfNullOrWhiteSpace(mimeType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(blobContainer);
+        ArgumentException.ThrowIfNullOrWhiteSpace(blobName);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(sizeInBytes);
+
+        return new TransactionImportFile
+        {
+            Id = Guid.CreateVersion7(),
+            FullFileName = fullFileName,
+            FileName = fileName,
+            FileExtension = fileExtension,
+            MimeType = mimeType,
+            BlobContainer = blobContainer,
+            BlobName = blobName,
+            SizeInBytes = sizeInBytes
+        };
+    }
+
+    /// <summary>
+    /// Updates the SHA256 hash after file upload confirmation
+    /// </summary>
+    public void UpdateSha256(string sha256)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(sha256);
+        Sha256 = sha256;
+    }
+
+    /// <summary>
+    /// Updates the actual file size after upload confirmation
+    /// </summary>
+    public void UpdateSizeInBytes(long sizeInBytes)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(sizeInBytes);
+        SizeInBytes = sizeInBytes;
     }
 }

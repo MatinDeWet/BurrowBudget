@@ -44,7 +44,7 @@ internal partial class TransactionImportFileConfig : IEntityTypeConfiguration<Tr
 
         entity.Property(x => x.Sha256)
             .HasMaxLength(64)
-            .IsRequired()
+            .IsRequired(false)
             .IsFixedLength();
 
         entity.Property(x => x.SizeInBytes)

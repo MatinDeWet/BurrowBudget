@@ -48,7 +48,6 @@ public class TransactionImportFileLockTests
             "text/csv",
             "imports",
             "blob-name",
-            "sha256hash",
             1024);
 
         var accounts = new List<Account>
@@ -92,7 +91,6 @@ public class TransactionImportFileLockTests
             "text/csv",
             "imports",
             "blob-name",
-            "sha256hash",
             1024);
 
         var accounts = new List<Account>
@@ -154,7 +152,6 @@ public class TransactionImportFileLockTests
             "text/csv",
             "imports",
             "blob-name",
-            "sha256hash",
             1024);
 
         var accounts = new List<Account>();
@@ -193,7 +190,6 @@ public class TransactionImportFileLockTests
             "text/csv",
             "imports",
             "blob-name",
-            "sha256hash",
             1024);
 
         var accounts = new List<Account>
@@ -241,7 +237,6 @@ public class TransactionImportFileLockTests
             "text/csv",
             "imports",
             "blob-name",
-            "sha256hash",
             1024);
 
         var accounts = new List<Account>
@@ -299,9 +294,9 @@ public class TransactionImportFileLockTests
 
         var files = new List<TransactionImportFile>
         {
-            TransactionImportFile.Create(_testBatchId, "file1.csv", "file1", ".csv", "text/csv", "imports", "blob1", "hash1", 1024),
-            TransactionImportFile.Create(_testBatchId, "file2.csv", "file2", ".csv", "text/csv", "imports", "blob2", "hash2", 2048),
-            TransactionImportFile.Create(_otherBatchId, "file3.csv", "file3", ".csv", "text/csv", "imports", "blob3", "hash3", 3072)
+            TransactionImportFile.Create(_testBatchId, "file1.csv", "file1", ".csv", "text/csv", "imports", "blob1", 1024),
+            TransactionImportFile.Create(_testBatchId, "file2.csv", "file2", ".csv", "text/csv", "imports", "blob2", 2048),
+            TransactionImportFile.Create(_otherBatchId, "file3.csv", "file3", ".csv", "text/csv", "imports", "blob3", 3072)
         };
 
         Mock<DbSet<Account>> mockAccountDbSet = accounts.BuildMockDbSet();
@@ -339,7 +334,7 @@ public class TransactionImportFileLockTests
 
         var files = new List<TransactionImportFile>
         {
-            TransactionImportFile.Create(_otherBatchId, "file1.csv", "file1", ".csv", "text/csv", "imports", "blob1", "hash1", 1024)
+            TransactionImportFile.Create(_otherBatchId, "file1.csv", "file1", ".csv", "text/csv", "imports", "blob1", 1024)
         };
 
         Mock<DbSet<Account>> mockAccountDbSet = accounts.BuildMockDbSet();
@@ -376,9 +371,9 @@ public class TransactionImportFileLockTests
 
         var files = new List<TransactionImportFile>
         {
-            TransactionImportFile.Create(_testBatchId, "file1.csv", "file1", ".csv", "text/csv", "imports", "blob1", "hash1", 1024),
-            TransactionImportFile.Create(_testBatchId, "file2.csv", "file2", ".csv", "text/csv", "imports", "blob2", "hash2", 2048),
-            TransactionImportFile.Create(_testBatchId, "file3.csv", "file3", ".csv", "text/csv", "imports", "blob3", "hash3", 3072)
+            TransactionImportFile.Create(_testBatchId, "file1.csv", "file1", ".csv", "text/csv", "imports", "blob1", 1024),
+            TransactionImportFile.Create(_testBatchId, "file2.csv", "file2", ".csv", "text/csv", "imports", "blob2", 2048),
+            TransactionImportFile.Create(_testBatchId, "file3.csv", "file3", ".csv", "text/csv", "imports", "blob3", 3072)
         };
 
         Mock<DbSet<Account>> mockAccountDbSet = accounts.BuildMockDbSet();
@@ -416,9 +411,9 @@ public class TransactionImportFileLockTests
 
         var files = new List<TransactionImportFile>
         {
-            TransactionImportFile.Create(_testBatchId, "alpha.csv", "alpha", ".csv", "text/csv", "imports", "blob1", "hash1", 1024),
-            TransactionImportFile.Create(_testBatchId, "beta.csv", "beta", ".csv", "text/csv", "imports", "blob2", "hash2", 2048),
-            TransactionImportFile.Create(_testBatchId, "gamma.csv", "gamma", ".csv", "text/csv", "imports", "blob3", "hash3", 3072)
+            TransactionImportFile.Create(_testBatchId, "alpha.csv", "alpha", ".csv", "text/csv", "imports", "blob1", 1024),
+            TransactionImportFile.Create(_testBatchId, "beta.csv", "beta", ".csv", "text/csv", "imports", "blob2", 2048),
+            TransactionImportFile.Create(_testBatchId, "gamma.csv", "gamma", ".csv", "text/csv", "imports", "blob3", 3072)
         };
 
         Mock<DbSet<Account>> mockAccountDbSet = accounts.BuildMockDbSet();
@@ -459,7 +454,7 @@ public class TransactionImportFileLockTests
 
         var files = new List<TransactionImportFile>
         {
-            TransactionImportFile.Create(_testBatchId, "file1.csv", "file1", ".csv", "text/csv", "imports", "blob1", "hash1", 1024)
+            TransactionImportFile.Create(_testBatchId, "file1.csv", "file1", ".csv", "text/csv", "imports", "blob1", 1024)
         };
 
         Mock<DbSet<Account>> mockAccountDbSet = accounts.BuildMockDbSet();

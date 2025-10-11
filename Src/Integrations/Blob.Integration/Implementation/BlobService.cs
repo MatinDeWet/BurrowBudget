@@ -137,17 +137,14 @@ public sealed class BlobService : IBlobService
             throw new FileNotFoundException($"Blob '{blobName}' not found in container '{containerName}'");
         }
 
-        // Get existing metadata
         Response<BlobProperties> propertiesResponse = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
         var existingMetadata = propertiesResponse.Value.Metadata.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        // Merge with new metadata (new values overwrite existing ones)
-        foreach (var kvp in metadata)
+        foreach (KeyValuePair<string, string> kvp in metadata)
         {
             existingMetadata[kvp.Key] = kvp.Value;
         }
 
-        // Set the updated metadata
         await blobClient.SetMetadataAsync(existingMetadata, cancellationToken: cancellationToken);
     }
 
@@ -165,12 +162,10 @@ public sealed class BlobService : IBlobService
 
         BlobContainerClient containerClient = await GetOrCreateContainerAsync(containerName, cancellationToken);
 
-        // Use provided blob name or generate a new one
         string finalBlobName = string.IsNullOrWhiteSpace(blobName) ? Guid.CreateVersion7().ToString() : blobName;
         BlobClient blobClient = containerClient.GetBlobClient(finalBlobName);
 
-        // Create an empty blob with zero bytes
-        using var emptyStream = new MemoryStream(Array.Empty<byte>());
+        using var emptyStream = new MemoryStream([]);
 
         var uploadOptions = new BlobUploadOptions
         {
@@ -189,7 +184,7 @@ public sealed class BlobService : IBlobService
     public async Task<Uri> CreateBlobSasTokenAsync(
         string blobName,
         string containerName,
-        TimeSpan? expiresIn = null,
+        TimeSpan expiration,
         BlobSasPermissions permissions = BlobSasPermissions.Read,
         CancellationToken cancellationToken = default)
     {
@@ -199,15 +194,12 @@ public sealed class BlobService : IBlobService
         BlobClient blobClient = containerClient.GetBlobClient(blobName);
 
         Response<bool> existsResponse = await blobClient.ExistsAsync(cancellationToken);
+
         if (!existsResponse.Value)
         {
             throw new FileNotFoundException($"Blob '{blobName}' not found in container '{containerName}'");
         }
 
-        // Default expiration is 1 hour if not specified
-        TimeSpan expiration = expiresIn ?? TimeSpan.FromHours(1);
-
-        // Check if we can generate SAS tokens (requires connection string with account key)
         if (!blobClient.CanGenerateSasUri)
         {
             throw new InvalidOperationException(
@@ -228,6 +220,38 @@ public sealed class BlobService : IBlobService
         Uri sasUri = blobClient.GenerateSasUri(sasBuilder);
 
         return sasUri;
+    }
+
+    public async Task<long> GetBlobSizeAsync(
+        string blobName,
+        string containerName,
+        CancellationToken cancellationToken = default)
+    {
+        ValidateMetadataInput(blobName, containerName);
+
+        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+        Response<bool> existsResponse = await blobClient.ExistsAsync(cancellationToken);
+        if (!existsResponse.Value)
+        {
+            throw new FileNotFoundException($"Blob '{blobName}' not found in container '{containerName}'");
+        }
+
+        return await blobClient.GetSizeAsync(cancellationToken);
+    }
+
+    public async Task<bool> BlobExistsAsync(
+        string blobName,
+        string containerName,
+        CancellationToken cancellationToken = default)
+    {
+        ValidateMetadataInput(blobName, containerName);
+
+        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+        return await blobClient.ExistsAsync(cancellationToken);
     }
 
     #region Private Methods

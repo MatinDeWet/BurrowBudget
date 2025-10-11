@@ -40,7 +40,17 @@ public interface IBlobService
     Task<Uri> CreateBlobSasTokenAsync(
         string blobName,
         string containerName,
-        TimeSpan? expiresIn = null,
+        TimeSpan expiration,
         Azure.Storage.Sas.BlobSasPermissions permissions = Azure.Storage.Sas.BlobSasPermissions.Read,
+        CancellationToken cancellationToken = default);
+
+    Task<long> GetBlobSizeAsync(
+        string blobName,
+        string containerName,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> BlobExistsAsync(
+        string blobName,
+        string containerName,
         CancellationToken cancellationToken = default);
 }

@@ -2,14 +2,14 @@
   "profiles": {
     "Runner.Presentation": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7106"
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true
     },
     "Container (Dockerfile)": {
-      "commandName": "Docker",
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
-      "containerRunArguments": "--init",
-      "httpPort": 33615,
-      "useSSL": false
+      "commandName": "Docker"
     }
-  }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
 }

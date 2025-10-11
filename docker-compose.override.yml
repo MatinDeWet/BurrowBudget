@@ -10,16 +10,34 @@ services:
         volumes:
             - database_data:/var/lib/postgresql/data/ 
 
-    azurite:
-        container_name: azurite
+    minio:
+        container_name: minio
+        command: server /data --console-address ":9001"
+        environment:
+            - MINIO_ROOT_USER=minioadmin
+            - MINIO_ROOT_PASSWORD=minioadmin
+            - MINIO_DOMAIN=localhost
         restart: unless-stopped
-        command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck --loose
         ports:
-            - 10000:10000
-            - 10001:10001
-            - 10002:10002
+            - "9000:9000"   # MinIO API
+            - "9001:9001"   # MinIO Console
         volumes:
-            - azurite_data:/data
+            - minio_data:/data
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+            interval: 30s
+            timeout: 20s
+            retries: 3
+
+    rabbitmq:
+        container_name: rabbitmq
+        environment:
+            - RABBITMQ_DEFAULT_USER=guest
+            - RABBITMQ_DEFAULT_PASS=guest
+        restart: unless-stopped
+        ports:
+            - "5672:5672"   # AMQP port
+            - "15672:15672" # Management UI
 
     webapi.presentation:
         container_name: webapi-presentation
@@ -31,15 +49,14 @@ services:
           - "6001:8081"
         depends_on:
           - database
-          - azurite
+          - minio
+          - rabbitmq
 
     runner.presentation:
         container_name: runner-presentation
         environment:
-            - AzureWebJobsStorage=AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;
-            - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
-        ports:
-          - "7071:8080"
+            - DOTNET_ENVIRONMENT=Development
         depends_on:
           - database
-          - azurite
+          - minio
+          - rabbitmq

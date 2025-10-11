@@ -1,9 +1,9 @@
 # See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
-FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated9.0 AS base
-WORKDIR /home/site/wwwroot
-EXPOSE 8080
+FROM mcr.microsoft.com/dotnet/runtime:9.0 AS base
+USER $APP_UID
+WORKDIR /app
 
 
 # This stage is used to build the service project
@@ -25,7 +25,6 @@ RUN dotnet publish "./Runner.Presentation.csproj" -c $BUILD_CONFIGURATION -o /ap
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
-WORKDIR /home/site/wwwroot
+WORKDIR /app
 COPY --from=publish /app/publish .
-ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
-    AzureFunctionsJobHost__Logging__Console__IsEnabled=true
+ENTRYPOINT ["dotnet", "Runner.Presentation.dll"]

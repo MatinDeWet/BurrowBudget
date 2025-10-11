@@ -2,8 +2,11 @@ services:
     database:
         image: postgres:latest
 
-    azurite:
-        image: mcr.microsoft.com/azure-storage/azurite:latest
+    minio:
+        image: quay.io/minio/minio:RELEASE.2024-07-29T22-14-52Z
+
+    rabbitmq:
+        image: rabbitmq:management
 
     webapi.presentation:
         image: ${DOCKER_REGISTRY-}webapipresentation
@@ -19,4 +22,4 @@ services:
 
 volumes:
     database_data:
-    azurite_data:
+    minio_data:

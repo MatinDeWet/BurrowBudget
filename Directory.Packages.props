@@ -51,9 +51,9 @@
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.0" />
     <!-- CSV -->
     <PackageVersion Include="CsvHelper" Version="33.1.0" />
-    <!-- Azure -->
-    <PackageVersion Include="Azure.Storage.Blobs" Version="12.25.1" />
     <!-- Files -->
     <PackageVersion Include="Microsoft.AspNetCore.StaticFiles" Version="2.3.0" />
+	<!-- Blob -->
+	<PackageVersion Include="Minio" Version="6.0.5" />
   </ItemGroup>
 </Project>

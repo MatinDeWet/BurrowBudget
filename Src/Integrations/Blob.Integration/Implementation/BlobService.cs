@@ -1,359 +1,267 @@
-using Azure;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Azure.Storage.Sas;
 using Blob.Integration.Contracts;
-using Blob.Integration.Extensions;
-using Blob.Integration.Options;
-using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Minio;
+using Minio.DataModel.Args;
+using Minio.DataModel.Response;
 
 namespace Blob.Integration.Implementation;
 
 public sealed class BlobService : IBlobService
 {
-    private readonly BlobServiceClient _blobServiceClient;
-    private readonly BlobStorageOptions _options;
+    private readonly IMinioClient _minioClient;
 
-    public BlobService(IOptions<BlobStorageOptions> options, ILogger<BlobService> logger)
+    public BlobService(IMinioClient minioClient)
     {
-        _options = options.Value;
-
-        if (string.IsNullOrWhiteSpace(_options.ConnectionString))
-        {
-            throw new InvalidOperationException("Blob storage connection string is not configured.");
-        }
-
-        _blobServiceClient = new BlobServiceClient(_options.ConnectionString);
+        _minioClient = minioClient;
     }
 
-    public async Task<string> UploadFileAsync(
-        Stream fileStream,
-        string fileName,
-        string containerName,
-        Dictionary<string, string>? metadata = null,
+    public async Task<string> UploadBlobAsync(
+        string bucketName, 
+        string objectName, 
+        Stream data, 
+        string contentType, 
+        Dictionary<string, string>? metadata = null, 
         CancellationToken cancellationToken = default)
     {
-        ValidateUploadInput(fileStream, fileName, containerName);
-
-        BlobContainerClient containerClient = await GetOrCreateContainerAsync(containerName, cancellationToken);
-
-        string blobName = Guid.CreateVersion7().ToString();
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
-
-        fileStream.ResetPosition();
-
-        var uploadOptions = new BlobUploadOptions
+        // Ensure bucket exists
+        BucketExistsArgs bucketExistsArgs = new BucketExistsArgs()
+            .WithBucket(bucketName);
+        
+        bool bucketExists = await _minioClient.BucketExistsAsync(bucketExistsArgs, cancellationToken);
+        
+        if (!bucketExists)
         {
-            Metadata = metadata,
-            HttpHeaders = new BlobHttpHeaders
-            {
-                ContentType = GetContentType(fileName)
-            }
-        };
+            MakeBucketArgs makeBucketArgs = new MakeBucketArgs()
+                .WithBucket(bucketName);
+            await _minioClient.MakeBucketAsync(makeBucketArgs, cancellationToken);
+        }
 
-        await blobClient.UploadAsync(fileStream, uploadOptions, cancellationToken);
+        // Upload the object
+        PutObjectArgs putObjectArgs = new PutObjectArgs()
+            .WithBucket(bucketName)
+            .WithObject(objectName)
+            .WithStreamData(data)
+            .WithObjectSize(data.Length)
+            .WithContentType(contentType);
 
-        return blobName;
+        if (metadata != null && metadata.Count > 0)
+        {
+            putObjectArgs.WithHeaders(metadata);
+        }
+
+        PutObjectResponse response = await _minioClient.PutObjectAsync(putObjectArgs, cancellationToken);
+        
+        return response.ObjectName;
     }
 
     public async Task<Stream> DownloadBlobAsync(
-        string blobName,
-        string containerName,
+        string bucketName, 
+        string objectName, 
         CancellationToken cancellationToken = default)
     {
-        ValidateDownloadInput(blobName, containerName);
+        var memoryStream = new MemoryStream();
 
-        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+        GetObjectArgs getObjectArgs = new GetObjectArgs()
+            .WithBucket(bucketName)
+            .WithObject(objectName)
+            .WithCallbackStream(stream => stream.CopyTo(memoryStream));
 
-        Response<bool> existsResponse = await blobClient.ExistsAsync(cancellationToken);
-        if (!existsResponse.Value)
-        {
-            throw new FileNotFoundException($"Blob '{blobName}' not found in container '{containerName}'");
-        }
-
-        Response<BlobDownloadStreamingResult> response = await blobClient.DownloadStreamingAsync(cancellationToken: cancellationToken);
-
-        return response.Value.Content;
+        await _minioClient.GetObjectAsync(getObjectArgs, cancellationToken);
+        
+        memoryStream.Position = 0;
+        return memoryStream;
     }
 
     public async Task DeleteBlobAsync(
-        string blobName,
-        string containerName,
+        string bucketName, 
+        string objectName, 
         CancellationToken cancellationToken = default)
     {
-        ValidateDeleteInput(blobName, containerName);
+        RemoveObjectArgs removeObjectArgs = new RemoveObjectArgs()
+            .WithBucket(bucketName)
+            .WithObject(objectName);
 
-        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
-
-        await blobClient.DeleteIfExistsAsync(
-            DeleteSnapshotsOption.IncludeSnapshots,
-            cancellationToken: cancellationToken);
+        await _minioClient.RemoveObjectAsync(removeObjectArgs, cancellationToken);
     }
 
-    public async Task<Dictionary<string, string>> GetBlobMetadataAsync(
-        string blobName,
-        string containerName,
+    public async Task AddMetadataAsync(
+        string bucketName, 
+        string objectName, 
+        Dictionary<string, string> metadata, 
         CancellationToken cancellationToken = default)
     {
-        ValidateMetadataInput(blobName, containerName);
+        // Get existing metadata
+        Dictionary<string, string> existingMetadata = await GetMetadataAsync(bucketName, objectName, cancellationToken);
 
-        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
-
-        Response<bool> existsResponse = await blobClient.ExistsAsync(cancellationToken);
-        if (!existsResponse.Value)
-        {
-            throw new FileNotFoundException($"Blob '{blobName}' not found in container '{containerName}'");
-        }
-
-        Response<BlobProperties> propertiesResponse = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
-
-        return propertiesResponse.Value.Metadata.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-    }
-
-    public async Task AddBlobMetadataAsync(
-        string blobName,
-        string containerName,
-        Dictionary<string, string> metadata,
-        CancellationToken cancellationToken = default)
-    {
-        ValidateMetadataInput(blobName, containerName);
-
-        if (metadata == null || metadata.Count == 0)
-        {
-            throw new ArgumentException("Metadata cannot be null or empty.", nameof(metadata));
-        }
-
-        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
-
-        Response<bool> existsResponse = await blobClient.ExistsAsync(cancellationToken);
-        if (!existsResponse.Value)
-        {
-            throw new FileNotFoundException($"Blob '{blobName}' not found in container '{containerName}'");
-        }
-
-        Response<BlobProperties> propertiesResponse = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
-        var existingMetadata = propertiesResponse.Value.Metadata.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
+        // Merge with new metadata
         foreach (KeyValuePair<string, string> kvp in metadata)
         {
             existingMetadata[kvp.Key] = kvp.Value;
         }
 
-        await blobClient.SetMetadataAsync(existingMetadata, cancellationToken: cancellationToken);
+        // Update metadata using copy operation
+        await UpdateMetadataInternalAsync(bucketName, objectName, existingMetadata, cancellationToken);
     }
 
-    public async Task<string> CreateEmptyBlobAsync(
-        string containerName,
-        string? blobName = null,
-        string contentType = "application/octet-stream",
-        Dictionary<string, string>? metadata = null,
+    public async Task RemoveMetadataAsync(
+        string bucketName, 
+        string objectName, 
+        IEnumerable<string> metadataKeys, 
         CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(containerName))
+        // Get existing metadata
+        Dictionary<string, string> existingMetadata = await GetMetadataAsync(bucketName, objectName, cancellationToken);
+
+        // Remove specified keys
+        foreach (string key in metadataKeys)
         {
-            throw new ArgumentException("Container name cannot be null or empty.", nameof(containerName));
+            existingMetadata.Remove(key);
         }
 
-        BlobContainerClient containerClient = await GetOrCreateContainerAsync(containerName, cancellationToken);
+        // Update metadata using copy operation
+        await UpdateMetadataInternalAsync(bucketName, objectName, existingMetadata, cancellationToken);
+    }
 
-        string finalBlobName = string.IsNullOrWhiteSpace(blobName) ? Guid.CreateVersion7().ToString() : blobName;
-        BlobClient blobClient = containerClient.GetBlobClient(finalBlobName);
+    public async Task UpdateMetadataAsync(
+        string bucketName, 
+        string objectName, 
+        Dictionary<string, string> metadata, 
+        CancellationToken cancellationToken = default)
+    {
+        await UpdateMetadataInternalAsync(bucketName, objectName, metadata, cancellationToken);
+    }
 
-        using var emptyStream = new MemoryStream([]);
+    public async Task<Dictionary<string, string>> GetMetadataAsync(
+        string bucketName, 
+        string objectName, 
+        CancellationToken cancellationToken = default)
+    {
+        StatObjectArgs statObjectArgs = new StatObjectArgs()
+            .WithBucket(bucketName)
+            .WithObject(objectName);
 
-        var uploadOptions = new BlobUploadOptions
+        Minio.DataModel.ObjectStat objectStat = await _minioClient.StatObjectAsync(statObjectArgs, cancellationToken);
+
+        var metadata = new Dictionary<string, string>();
+
+        if (objectStat.MetaData != null)
         {
-            Metadata = metadata,
-            HttpHeaders = new BlobHttpHeaders
+            foreach (KeyValuePair<string, string> kvp in objectStat.MetaData)
             {
-                ContentType = contentType
+                // MinIO returns metadata keys with "x-amz-meta-" prefix, we'll store them as-is
+                // but you can strip the prefix if needed
+                metadata[kvp.Key] = kvp.Value;
             }
-        };
+        }
 
-        await blobClient.UploadAsync(emptyStream, uploadOptions, cancellationToken);
-
-        return finalBlobName;
+        return metadata;
     }
 
-    public async Task<Uri> CreateBlobSasTokenAsync(
-        string blobName,
-        string containerName,
-        TimeSpan expiration,
-        BlobSasPermissions permissions = BlobSasPermissions.Read,
+    private async Task UpdateMetadataInternalAsync(
+        string bucketName, 
+        string objectName, 
+        Dictionary<string, string> metadata, 
+        CancellationToken cancellationToken)
+    {
+        // MinIO doesn't support direct metadata update, so we use copy operation
+        // with REPLACE directive to update metadata
+        CopySourceObjectArgs copySourceObjectArgs = new CopySourceObjectArgs()
+            .WithBucket(bucketName)
+            .WithObject(objectName);
+
+        CopyObjectArgs copyObjectArgs = new CopyObjectArgs()
+            .WithBucket(bucketName)
+            .WithObject(objectName)
+            .WithCopyObjectSource(copySourceObjectArgs)
+            .WithReplaceMetadataDirective(true);
+
+        if (metadata != null && metadata.Count > 0)
+        {
+            copyObjectArgs.WithHeaders(metadata);
+        }
+
+        await _minioClient.CopyObjectAsync(copyObjectArgs, cancellationToken);
+    }
+
+    public async Task CreateEmptyBlobAsync(
+        string bucketName, 
+        string objectName, 
+        string contentType = "application/octet-stream", 
+        Dictionary<string, string>? metadata = null, 
         CancellationToken cancellationToken = default)
     {
-        ValidateMetadataInput(blobName, containerName);
-
-        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
-
-        Response<bool> existsResponse = await blobClient.ExistsAsync(cancellationToken);
-
-        if (!existsResponse.Value)
+        // Ensure bucket exists
+        BucketExistsArgs bucketExistsArgs = new BucketExistsArgs()
+            .WithBucket(bucketName);
+        
+        bool bucketExists = await _minioClient.BucketExistsAsync(bucketExistsArgs, cancellationToken);
+        
+        if (!bucketExists)
         {
-            throw new FileNotFoundException($"Blob '{blobName}' not found in container '{containerName}'");
+            MakeBucketArgs makeBucketArgs = new MakeBucketArgs()
+                .WithBucket(bucketName);
+            await _minioClient.MakeBucketAsync(makeBucketArgs, cancellationToken);
         }
 
-        if (!blobClient.CanGenerateSasUri)
+        // Create an empty stream (0 bytes)
+        using var emptyStream = new MemoryStream();
+
+        PutObjectArgs putObjectArgs = new PutObjectArgs()
+            .WithBucket(bucketName)
+            .WithObject(objectName)
+            .WithStreamData(emptyStream)
+            .WithObjectSize(0)
+            .WithContentType(contentType);
+
+        if (metadata != null && metadata.Count > 0)
         {
-            throw new InvalidOperationException(
-                "Cannot generate SAS token. Ensure the BlobServiceClient is created with a connection string that includes the account key.");
+            putObjectArgs.WithHeaders(metadata);
         }
 
-        var sasBuilder = new BlobSasBuilder
-        {
-            BlobContainerName = containerName,
-            BlobName = blobName,
-            Resource = "b", // "b" for blob
-            StartsOn = DateTimeOffset.UtcNow.AddMinutes(-5), // Start time with 5 min clock skew allowance
-            ExpiresOn = DateTimeOffset.UtcNow.Add(expiration)
-        };
-
-        sasBuilder.SetPermissions(permissions);
-
-        Uri sasUri = blobClient.GenerateSasUri(sasBuilder);
-
-        return sasUri;
+        await _minioClient.PutObjectAsync(putObjectArgs, cancellationToken);
     }
 
-    public async Task<long> GetBlobSizeAsync(
-        string blobName,
-        string containerName,
+    public async Task<string> GetPresignedUploadUrlAsync(
+        string bucketName, 
+        string objectName, 
+        TimeSpan expiry, 
         CancellationToken cancellationToken = default)
     {
-        ValidateMetadataInput(blobName, containerName);
-
-        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
-
-        Response<bool> existsResponse = await blobClient.ExistsAsync(cancellationToken);
-        if (!existsResponse.Value)
+        // Ensure bucket exists
+        BucketExistsArgs bucketExistsArgs = new BucketExistsArgs()
+            .WithBucket(bucketName);
+        
+        bool bucketExists = await _minioClient.BucketExistsAsync(bucketExistsArgs, cancellationToken);
+        
+        if (!bucketExists)
         {
-            throw new FileNotFoundException($"Blob '{blobName}' not found in container '{containerName}'");
+            MakeBucketArgs makeBucketArgs = new MakeBucketArgs()
+                .WithBucket(bucketName);
+            await _minioClient.MakeBucketAsync(makeBucketArgs, cancellationToken);
         }
 
-        return await blobClient.GetSizeAsync(cancellationToken);
+        int expirySeconds = (int)expiry.TotalSeconds;
+
+        PresignedPutObjectArgs presignedPutObjectArgs = new PresignedPutObjectArgs()
+            .WithBucket(bucketName)
+            .WithObject(objectName)
+            .WithExpiry(expirySeconds);
+
+        return await _minioClient.PresignedPutObjectAsync(presignedPutObjectArgs);
     }
 
-    public async Task<bool> BlobExistsAsync(
-        string blobName,
-        string containerName,
+    public async Task<string> GetPresignedDownloadUrlAsync(
+        string bucketName, 
+        string objectName, 
+        TimeSpan expiry, 
         CancellationToken cancellationToken = default)
     {
-        ValidateMetadataInput(blobName, containerName);
+        int expirySeconds = (int)expiry.TotalSeconds;
 
-        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-        BlobClient blobClient = containerClient.GetBlobClient(blobName);
+        PresignedGetObjectArgs presignedGetObjectArgs = new PresignedGetObjectArgs()
+            .WithBucket(bucketName)
+            .WithObject(objectName)
+            .WithExpiry(expirySeconds);
 
-        return await blobClient.ExistsAsync(cancellationToken);
+        return await _minioClient.PresignedGetObjectAsync(presignedGetObjectArgs);
     }
-
-    #region Private Methods
-
-    private async Task<BlobContainerClient> GetOrCreateContainerAsync(string containerName, CancellationToken cancellationToken)
-    {
-        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-
-        if (_options.AutoCreateContainers)
-        {
-            PublicAccessType publicAccessType = _options.DefaultPublicAccessLevel.ToUpperInvariant() switch
-            {
-                "BLOB" => PublicAccessType.Blob,
-                "CONTAINER" => PublicAccessType.BlobContainer,
-                _ => PublicAccessType.None
-            };
-
-            await containerClient.CreateIfNotExistsAsync(publicAccessType, cancellationToken: cancellationToken);
-        }
-
-        return containerClient;
-    }
-
-    private static string GetContentType(string fileName)
-    {
-        var provider = new FileExtensionContentTypeProvider();
-
-        if (provider.TryGetContentType(fileName, out string? contentType))
-        {
-            return contentType;
-        }
-
-        return "application/octet-stream";
-    }
-
-    private void ValidateUploadInput(Stream fileStream, string fileName, string containerName)
-    {
-        fileStream.ValidateForUpload(nameof(fileStream));
-
-        if (string.IsNullOrWhiteSpace(fileName))
-        {
-            throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
-        }
-
-        if (string.IsNullOrWhiteSpace(containerName))
-        {
-            throw new ArgumentException("Container name cannot be null or empty.", nameof(containerName));
-        }
-
-        if (!fileName.IsValidFileExtension(_options.AllowedFileExtensions))
-        {
-            throw new ArgumentException(
-                $"File extension not allowed. Allowed extensions: {string.Join(", ", _options.AllowedFileExtensions)}",
-                nameof(fileName));
-        }
-
-        if (fileStream.CanSeek && fileStream.Length.ExceedsMaxSize(_options.MaxFileSizeMB))
-        {
-            throw new ArgumentException(
-                $"File size exceeds maximum allowed size of {_options.MaxFileSizeMB} MB.",
-                nameof(fileStream));
-        }
-    }
-
-    private static void ValidateDownloadInput(string blobName, string containerName)
-    {
-        if (string.IsNullOrWhiteSpace(blobName))
-        {
-            throw new ArgumentException("Blob name cannot be null or empty.", nameof(blobName));
-        }
-
-        if (string.IsNullOrWhiteSpace(containerName))
-        {
-            throw new ArgumentException("Container name cannot be null or empty.", nameof(containerName));
-        }
-    }
-
-    private static void ValidateDeleteInput(string blobName, string containerName)
-    {
-        if (string.IsNullOrWhiteSpace(blobName))
-        {
-            throw new ArgumentException("Blob name cannot be null or empty.", nameof(blobName));
-        }
-
-        if (string.IsNullOrWhiteSpace(containerName))
-        {
-            throw new ArgumentException("Container name cannot be null or empty.", nameof(containerName));
-        }
-    }
-
-    private static void ValidateMetadataInput(string blobName, string containerName)
-    {
-        if (string.IsNullOrWhiteSpace(blobName))
-        {
-            throw new ArgumentException("Blob name cannot be null or empty.", nameof(blobName));
-        }
-
-        if (string.IsNullOrWhiteSpace(containerName))
-        {
-            throw new ArgumentException("Container name cannot be null or empty.", nameof(containerName));
-        }
-    }
-
-    #endregion
 }
